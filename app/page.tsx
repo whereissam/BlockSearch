@@ -1,10 +1,67 @@
-import Link from "next/link"
+"use client"
 
+import Link from "next/link"
+import { useEffect, useState } from "react"
 import { siteConfig } from "@/config/site"
 import { buttonVariants } from "@/components/ui/button"
-import { InputBox } from "@/components/inputBox"
+// import { SearchInput } from "@/components/SearchInput"
+import SearchInput from '@/components/SearchInput';
+import SearchResults from '@/components/SearchResults';
+// import { createClient } from '@/utils/supabase/server'
+// import { cookies } from 'next/headers'
+import { createClient } from '@supabase/supabase-js'
 
 export default function IndexPage() {
+
+  const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+  const [results, setResults] = useState([]);
+
+  const handleSearch = async (query: string) => {
+    console.log('query', query);
+    await searchInSupabase(query);
+  };
+  // const cookieStore = cookies()
+  // const supabase = createClient(cookieStore)
+
+  const searchInSupabase = async (query : string) => {
+
+    let { data: blockchainTools, error } = await supabase
+      .from('blockchainTools')
+      .select('*')
+      .textSearch('name', `${query}`)
+
+      if(error){
+        console.log(error)
+      }
+
+      if(blockchainTools){
+        console.log(blockchainTools)
+        setResults(blockchainTools)
+      }
+    }
+  
+
+  useEffect(() => {
+    const fetchData = async () => {
+      
+    let { data: blockchainTools, error } = await supabase
+      .from('blockchainTools')
+      .select('*')
+
+      if(error){
+        console.log(error)
+      }
+
+      if(blockchainTools){
+        console.log(blockchainTools)
+        setResults(blockchainTools)
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  console.log('results', results)
   return (
     <section className="container flex flex-col justify-center items-center gap-6 pb-8 pt-6 md:py-10">
       <div className="flex max-w-[980px] flex-col items-start gap-2">
@@ -33,7 +90,9 @@ export default function IndexPage() {
           GitHub
         </Link>
       </div> */}
-      <InputBox />
+      <SearchInput onSearch={handleSearch} />
+      <SearchResults results={results} />
+
     </section>
   )
 }
