@@ -29,6 +29,7 @@ export default function IndexPage() {
   if (process.env.NODE_ENV === 'production') {
     // Use Vercel environment variables
     supabaseUrl = process.env.SUPABASE_URL;
+    console.log('supabaseUrl', supabaseUrl)
     supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
   } else if(process.env.NODE_ENV === 'development') {
     // Use local environment variables
