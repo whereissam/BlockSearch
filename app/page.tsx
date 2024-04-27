@@ -28,9 +28,9 @@ export default function IndexPage() {
   // Check if the application is running locally or on Vercel
   if (process.env.NODE_ENV === 'production') {
     // Use Vercel environment variables
-    supabaseUrl = process.env.SUPABASE_URL;
+    supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     console.log('supabaseUrl', supabaseUrl)
-    supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
+    supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_URL;
   } else if(process.env.NODE_ENV === 'development') {
     // Use local environment variables
     supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
