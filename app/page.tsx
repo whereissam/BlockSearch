@@ -24,13 +24,11 @@ interface Result {
 export default function IndexPage() {
   let supabaseUrl, supabaseAnonKey
 
-  console.log(process.env.NODE_ENV)
   // Check if the application is running locally or on Vercel
   if (process.env.NODE_ENV === 'production') {
     // Use Vercel environment variables
     supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    console.log('supabaseUrl', supabaseUrl)
-    supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   } else if(process.env.NODE_ENV === 'development') {
     // Use local environment variables
     supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
