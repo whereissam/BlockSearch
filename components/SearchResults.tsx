@@ -14,7 +14,7 @@ interface Result {
 import { Box, Card, Inset, Strong, Text, Link } from '@radix-ui/themes';
   
 const SearchResults: React.FC<SearchResultsProps> = ({ results }) => {
-    console.log('results', results)
+
     return (
         
         <div className='flex gap-4'>

@@ -11,13 +11,40 @@ import SearchResults from '@/components/SearchResults';
 // import { cookies } from 'next/headers'
 import { createClient } from '@supabase/supabase-js'
 
-export default function IndexPage() {
+interface Result {
+  id: string;
+  image_url: string;
+  name: string;
+  intro: string;
+  tags: string;
+  url: string;
+  description: string;
+}
 
-  const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
-  const [results, setResults] = useState([]);
+export default function IndexPage() {
+  let supabaseUrl, supabaseAnonKey
+
+  console.log(process.env.NODE_ENV)
+  // Check if the application is running locally or on Vercel
+  if (process.env.NODE_ENV === 'production') {
+    // Use Vercel environment variables
+    supabaseUrl = process.env.SUPABASE_URL;
+    supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
+  } else if(process.env.NODE_ENV === 'development') {
+    // Use local environment variables
+    supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+    supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+  }
+
+  // Check if environment variables are defined
+  if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error('Supabase URL or Supabase anon key is not defined in the environment variables.');
+  }
+
+  const supabase = createClient(supabaseUrl, supabaseAnonKey)
+  const [results, setResults] = useState<Result[]>([]);
 
   const handleSearch = async (query: string) => {
-    console.log('query', query);
     await searchInSupabase(query);
   };
   // const cookieStore = cookies()
@@ -35,7 +62,6 @@ export default function IndexPage() {
       }
 
       if(blockchainTools){
-        console.log(blockchainTools)
         setResults(blockchainTools)
       }
     }
@@ -53,7 +79,6 @@ export default function IndexPage() {
       }
 
       if(blockchainTools){
-        console.log(blockchainTools)
         setResults(blockchainTools)
       }
     }
@@ -61,7 +86,6 @@ export default function IndexPage() {
     fetchData()
   }, [])
 
-  console.log('results', results)
   return (
     <section className="container flex flex-col justify-center items-center gap-6 pb-8 pt-6 md:py-10">
       <div className="flex max-w-[980px] flex-col items-start gap-2">
