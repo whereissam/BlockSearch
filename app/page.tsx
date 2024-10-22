@@ -1,15 +1,12 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { useEffect, useState } from "react"
-import { siteConfig } from "@/config/site"
-import { buttonVariants } from "@/components/ui/button"
-// import { SearchInput } from "@/components/SearchInput"
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { siteConfig } from "@/config/site";
+import { buttonVariants } from "@/components/ui/button";
 import SearchInput from '@/components/SearchInput';
 import SearchResults from '@/components/SearchResults';
-// import { createClient } from '@/utils/supabase/server'
-// import { cookies } from 'next/headers'
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js';
 
 interface Result {
   id: string;
@@ -22,68 +19,67 @@ interface Result {
 }
 
 export default function IndexPage() {
-  let supabaseUrl, supabaseAnonKey
+  let supabaseUrl, supabaseAnonKey;
 
   // Check if the application is running locally or on Vercel
   if (process.env.NODE_ENV === 'production') {
-    // Use Vercel environment variables
     supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  } else if(process.env.NODE_ENV === 'development') {
-    // Use local environment variables
+  } else if (process.env.NODE_ENV === 'development') {
     supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
     supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
   }
 
-  // Check if environment variables are defined
   if (!supabaseUrl || !supabaseAnonKey) {
     throw new Error('Supabase URL or Supabase anon key is not defined in the environment variables.');
   }
 
-  const supabase = createClient(supabaseUrl, supabaseAnonKey)
+  const supabase = createClient(supabaseUrl, supabaseAnonKey);
   const [results, setResults] = useState<Result[]>([]);
+  const [loadCount, setLoadCount] = useState(20); // Start with loading 20 items
 
   const handleSearch = async (query: string) => {
     await searchInSupabase(query);
   };
-  // const cookieStore = cookies()
-  // const supabase = createClient(cookieStore)
 
-  const searchInSupabase = async (query : string) => {
-
+  const searchInSupabase = async (query: string) => {
     let { data: blockchainTools, error } = await supabase
-      .from('blockchainTools')
+      .from('tools')
       .select('*')
       .textSearch('name', `${query}`)
+      .limit(loadCount); // Limit results to the current load count
 
-      if(error){
-        console.log(error)
-      }
-
-      if(blockchainTools){
-        setResults(blockchainTools)
-      }
+    if (error) {
+      console.log(error);
     }
-  
+
+    if (blockchainTools) {
+      setResults(blockchainTools);
+    }
+  };
+
+  const fetchData = async () => {
+    let { data: blockchainTools, error } = await supabase
+      .from('tools')
+      .select('*')
+      .limit(loadCount); // Limit results to the current load count
+
+    if (error) {
+      console.log(error);
+    }
+
+    if (blockchainTools) {
+      setResults(blockchainTools);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      
-    let { data: blockchainTools, error } = await supabase
-      .from('blockchainTools')
-      .select('*')
+    fetchData();
+  }, [loadCount]); // Fetch data again when loadCount changes
 
-      if(error){
-        console.log(error)
-      }
-
-      if(blockchainTools){
-        setResults(blockchainTools)
-      }
-    }
-
-    fetchData()
-  }, [])
+  const handleLoadMore = () => {
+    setLoadCount((prevCount) => prevCount + 20); // Increase load count by 20
+  };
 
   return (
     <section className="container flex flex-col justify-center items-center gap-6 pb-8 pt-6 md:py-10">
@@ -91,31 +87,20 @@ export default function IndexPage() {
         <h1 className="text-3xl font-extrabold leading-tight tracking-tighter md:text-4xl">
           Blockchain Tool Search Platform 
         </h1>
-        <p className="max-w-[700px] text-lg text-muted-foreground">
+        <p className="max-w-[900px] text-lg text-muted-foreground">
           Easy to use & collect it which you want
         </p>
       </div>
-      {/* <div className="flex gap-4">
-        <Link
-          href={siteConfig.links.docs}
-          target="_blank"
-          rel="noreferrer"
-          className={buttonVariants()}
-        >
-          Documentation
-        </Link>
-        <Link
-          target="_blank"
-          rel="noreferrer"
-          href={siteConfig.links.github}
-          className={buttonVariants({ variant: "outline" })}
-        >
-          GitHub
-        </Link>
-      </div> */}
       <SearchInput onSearch={handleSearch} />
       <SearchResults results={results} />
-
+      {results.length > 0 && (
+        <button
+          onClick={handleLoadMore}
+          className="mt-4 p-2 bg-blue-500 text-white rounded-lg"
+        >
+          Load More
+        </button>
+      )}
     </section>
-  )
+  );
 }

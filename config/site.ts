@@ -3,7 +3,7 @@ export type SiteConfig = typeof siteConfig
 export const siteConfig = {
   name: "BlockSearch",
   description:
-    "Website for search blockchain & collect",
+    "Website for search blockchain tool & collect",
   mainNav: [
     {
       title: "Home",
@@ -11,8 +11,7 @@ export const siteConfig = {
     },
   ],
   links: {
-    twitter: "https://twitter.com/shadcn",
-    github: "https://github.com/shadcn/ui",
-    docs: "https://ui.shadcn.com",
+    twitter: "https://x.com/bungeegumeee",
+    github: "https://github.com/whereissam",
   },
 }

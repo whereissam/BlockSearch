@@ -1,0 +1,68 @@
+[
+    {
+      "id": 1,
+      "name": "Notion",
+      "website_url": "https://www.notion.so",
+      "image_url": "https://example.com/notion.png",
+      "intro": "All-in-one workspace for note-taking, project management, and collaboration.",
+      "tags": ["productivity", "collaboration", "notes"],
+      "category": "Productivity",
+      "rating": 4.8,
+      "votes": 200,
+      "pricing": "Freemium",
+      "added_on": "2024-10-22"
+    },
+    {
+      "id": 2,
+      "name": "Figma",
+      "website_url": "https://www.figma.com",
+      "image_url": "https://example.com/figma.png",
+      "intro": "Collaborative design tool for UI/UX projects.",
+      "tags": ["design", "collaboration", "UI"],
+      "category": "Design",
+      "rating": 4.7,
+      "votes": 180,
+      "pricing": "Freemium",
+      "added_on": "2024-10-20"
+    },
+    {
+      "id": 3,
+      "name": "Visual Studio Code",
+      "website_url": "https://code.visualstudio.com",
+      "image_url": "https://example.com/vscode.png",
+      "intro": "Lightweight but powerful code editor developed by Microsoft.",
+      "tags": ["development", "IDE", "code"],
+      "category": "Development",
+      "rating": 4.9,
+      "votes": 250,
+      "pricing": "Free",
+      "added_on": "2024-10-18"
+    },
+    {
+      "id": 4,
+      "name": "Canva",
+      "website_url": "https://www.canva.com",
+      "image_url": "https://example.com/canva.png",
+      "intro": "Graphic design platform for creating social media graphics, presentations, and more.",
+      "tags": ["design", "graphics", "templates"],
+      "category": "Design",
+      "rating": 4.5,
+      "votes": 150,
+      "pricing": "Freemium",
+      "added_on": "2024-10-21"
+    },
+    {
+      "id": 5,
+      "name": "Slack",
+      "website_url": "https://slack.com",
+      "image_url": "https://example.com/slack.png",
+      "intro": "A messaging app for teams that organizes conversations and integrates with many tools.",
+      "tags": ["communication", "collaboration", "chat"],
+      "category": "Communication",
+      "rating": 4.6,
+      "votes": 220,
+      "pricing": "Freemium",
+      "added_on": "2024-10-19"
+    }
+  ]
+  
