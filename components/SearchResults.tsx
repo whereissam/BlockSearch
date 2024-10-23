@@ -2,14 +2,15 @@ import { Star, ExternalLink } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Box, Inset, Strong, Text, Link } from '@radix-ui/themes';
-Link
+import { useRouter } from 'next/navigation'
+
 interface Result {
     id: string;
     image_url: string;
     name: string;
     intro: string;
     tags: string;
-    url: string;
+    website_url: string;
     description: string;
   }
   
@@ -18,9 +19,9 @@ interface Result {
   }
 
   const SearchResults: React.FC<SearchResultsProps> = ({ results }) => {
-
+    const router = useRouter()
     const handleTagClick = (tag: string) => {
-      console.log(`Tag clicked: ${tag}`);
+      router.push(`/tags/${encodeURIComponent(tag)}`);
       // Add any logic, such as filtering or navigation based on the tag.
     };
 
@@ -49,15 +50,15 @@ interface Result {
         </CardContent>
         <CardFooter className="p-4 pt-0">
         <div className="flex flex-wrap gap-2">
-  {result.tags.split(', ').map((tag, index) => (
-    <button
-      key={index}
-      onClick={() => handleTagClick(tag)}
-      className="bg-gray-100 text-gray-800 px-2 py-1 rounded-md hover:bg-gray-200 transition"
-    >
-      {tag}
-    </button>
-  ))}
+        {result.tags.split(', ').map((tag, index) => (
+  <button
+    key={index}
+    onClick={() => handleTagClick(tag)}
+    className="bg-gray-100 text-gray-800 px-2 py-1 rounded-md hover:bg-gray-200 transition"
+  >
+    {tag}
+  </button>
+))}
 </div>
 
   </CardFooter>
@@ -68,4 +69,3 @@ interface Result {
   };
   
   export default SearchResults;
-  
