@@ -30,25 +30,38 @@ export default function IndexPage() {
   const supabase = createClient(supabaseUrl, supabaseAnonKey);
   const [results, setResults] = useState<Result[]>([]);
   const [loadCount, setLoadCount] = useState(20); // Start with 20 items
+  const [currentTag, setCurrentTag] = useState<string | null>(null);
+  const [currentQuery, setCurrentQuery] = useState<string>("");
 
   // Fetch data based on tag and query
-  const fetchData = async (tag: string | null = null, query: string = "") => {
+  const fetchData = async (tag: string | null = currentTag, query: string = currentQuery) => {
     let supabaseQuery = supabase.from("tools").select("*").limit(loadCount);
-
+  
+    // Build search criteria based on the query
     if (query) {
-      supabaseQuery = supabaseQuery.textSearch("name", query);
+      // Adjust the search to include name, description, and tags
+      supabaseQuery = supabaseQuery.or(
+        `name.ilike.%${query}%,intro.ilike.%${query}%,tags.ilike.%${query}%`
+      );
     }
-
+  
     if (tag) {
       supabaseQuery = supabaseQuery.or(`tags.ilike.%${tag}%,tags.ilike.%${tag}%`);
     }
-
+  
     const { data: blockchainTools, error } = await supabaseQuery;
-
+  
     if (error) {
       console.error("Error fetching data:", error);
     } else {
-      setResults(blockchainTools || []);
+      if (loadCount === 20) {
+        setResults(blockchainTools || []);
+      } else {
+        setResults((prevResults) => {
+          const newResults = blockchainTools || [];
+          return [...new Set([...prevResults, ...newResults])];
+        });
+      }
     }
   };
 
@@ -57,18 +70,23 @@ export default function IndexPage() {
     fetchData();
   }, [loadCount]);
 
-  // Handle tag selection immediately without state delays
+  // Handle tag selection and reset load count and results
   const handleTagChange = (value: string) => {
     const tag = value === "" ? null : value; // Empty value means "All"
+    setCurrentTag(tag); // Set current tag
+    setLoadCount(20); // Reset load count when changing tags
     fetchData(tag); // Fetch fresh data for the selected tag
   };
 
   const handleSearch = async (query: string) => {
+    setCurrentQuery(query); // Set the current search query
+    setLoadCount(20); // Reset load count when searching
     fetchData(null, query); // Search without tag filter
   };
 
   const handleLoadMore = () => {
     setLoadCount((prevCount) => prevCount + 20); // Increase load count by 20
+    fetchData(currentTag, currentQuery); // Fetch more based on current filters
   };
 
   return (
@@ -85,19 +103,19 @@ export default function IndexPage() {
         </div>
         <Tabs defaultValue="" onValueChange={handleTagChange} className="mb-8 mt-4">
           <TabsList className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-9 gap-2">
-            <TabsTrigger value="">All</TabsTrigger>
-            <TabsTrigger value="meme">Meme</TabsTrigger>
-            <TabsTrigger value="developer-tools">Developer Tools</TabsTrigger>
-            <TabsTrigger value="explorer">Explorer</TabsTrigger>
-            <TabsTrigger value="trading">Trading</TabsTrigger>
-            <TabsTrigger value="defi">DeFi</TabsTrigger>
-            <TabsTrigger value="ai">AI</TabsTrigger>
-            <TabsTrigger value="exchange">Exchange</TabsTrigger>
-            <TabsTrigger value="aggregator">Aggregator</TabsTrigger>
+            <TabsTrigger value="" onClick={() => handleTagChange("")}>All</TabsTrigger>
+            <TabsTrigger value="meme" onClick={() => handleTagChange("meme")}>Meme</TabsTrigger>
+            <TabsTrigger value="developer-tools" onClick={() => handleTagChange("developer-tools")}>Developer Tools</TabsTrigger>
+            <TabsTrigger value="explorer" onClick={() => handleTagChange("explorer")}>Explorer</TabsTrigger>
+            <TabsTrigger value="trading" onClick={() => handleTagChange("trading")}>Trading</TabsTrigger>
+            <TabsTrigger value="defi" onClick={() => handleTagChange("defi")}>DeFi</TabsTrigger>
+            <TabsTrigger value="ai" onClick={() => handleTagChange("ai")}>AI</TabsTrigger>
+            <TabsTrigger value="exchange" onClick={() => handleTagChange("exchange")}>Exchange</TabsTrigger>
+            <TabsTrigger value="aggregator" onClick={() => handleTagChange("aggregator")}>Aggregator</TabsTrigger>
           </TabsList>
         </Tabs>
         <SearchResults results={results} />
-        {results.length > 0 && (
+        {results.length >= loadCount && results.length > 0 && (
           <Button onClick={handleLoadMore} className="mt-4">
             Load More
           </Button>
